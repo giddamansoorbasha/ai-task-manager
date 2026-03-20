@@ -6,11 +6,24 @@ from app.db.database import engine, Base
 from app.models import User, Task
 from app.routes import auth, users, tasks, ai
 
+
+
 Base.metadata.create_all(bind=engine)
 
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(title="AI Task Manager")
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -22,3 +35,4 @@ app.include_router(ai.router)
 @app.get("/")
 def root():
     return {"message": "AI Task Manager API is running"}
+
