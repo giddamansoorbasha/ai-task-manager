@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment & secrets
+.env
+*.env
+
+# Build / distribution
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Logs
+*.log
+
+# Databases (local dev only)
+*.db
+*.sqlite3
+
+# IDE/editor junk
+.vscode/
+.idea/
+*.swp
+*.swo
