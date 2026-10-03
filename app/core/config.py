@@ -11,6 +11,6 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_TIME: int = 30
     REFRESH_TOKEN_TIME: int = 7
     APP_ENV: str = "development"
-    DEBUG: bool = True
+    DEBUG: bool = False
 
 settings = Settings()

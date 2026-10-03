@@ -1,6 +1,12 @@
+import logging
+import app.core.logging
 from fastapi import FastAPI
 from app.routes.auth import auth_router
 from app.routes.task import task_router
+
+logger = logging.getLogger(__name__)
+
+logger.info("Application Started")
 
 app = FastAPI()
 
