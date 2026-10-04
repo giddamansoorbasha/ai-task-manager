@@ -1,14 +1,11 @@
 import os
+from dotenv import dotenv_values
 
-TEST_DATABASE_URL = os.environ.get(
-    "TEST_DATABASE_URL",
-    "postgresql+asyncpg://<user>:<password>@localhost:5432/ai_task_manager_test",
-)
-assert "test" in TEST_DATABASE_URL, "Refusing to run tests on a non-test database"
+TEST_DATABASE_URL = os.environ.get("TEST_DATABASE_URL") or dotenv_values(".env").get("TEST_DATABASE_URL")
+assert TEST_DATABASE_URL and "test" in TEST_DATABASE_URL, "Set TEST_DATABASE_URL to a *test* database in .env"
 
 os.environ["DATABASE_URL"] = TEST_DATABASE_URL
 os.environ.setdefault("SECRET_KEY", "test-secret-key-at-least-32-characters-long")
-
 import pytest_asyncio
 from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker

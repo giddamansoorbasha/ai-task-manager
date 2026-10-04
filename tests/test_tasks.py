@@ -53,6 +53,19 @@ async def test_cannot_access_other_users_task(client, login_as):
     assert (await client.get(f"/tasks/{task['task_id']}", headers=headers_b)).status_code == 404
     assert (await client.delete(f"/tasks/{task['task_id']}", headers=headers_b)).status_code == 404
 
+async def test_pagination(client, login_as):
+    headers = await login_as()
+    for i in range(3):
+        await client.post("/tasks/", json={"title": f"T{i}", "description": "D"}, headers=headers)
+
+    page1 = await client.get("/tasks/?limit=2&offset=0", headers=headers)
+    page2 = await client.get("/tasks/?limit=2&offset=2", headers=headers)
+    assert len(page1.json()) == 2
+    assert len(page2.json()) == 1
+    assert {t["task_id"] for t in page1.json()}.isdisjoint({t["task_id"] for t in page2.json()})
+
+    assert (await client.get("/tasks/?limit=0", headers=headers)).status_code == 422
+    assert (await client.get("/tasks/?limit=101", headers=headers)).status_code == 422
 
 async def test_delete_task(client, login_as):
     headers = await login_as()

@@ -40,15 +40,18 @@ async def create_task(task_data: TaskRequest, current_user: User = Depends(get_c
 @task_router.get("/", response_model=list[TaskResponse])
 async def get_tasks(
     status_filter: TaskStatus | None = Query(None, alias="status"),
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, ge=0),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_async_db),
 ):
     query = select(Task).where(Task.user_id == current_user.user_id)
     if status_filter:
         query = query.where(Task.status == status_filter)
-    result = await db.execute(query.order_by(Task.due_date.asc().nulls_last()))
+    query = query.order_by(Task.due_date.asc().nulls_last(), Task.task_id).limit(limit).offset(offset)
+    result = await db.execute(query)
     tasks = result.scalars().all()
-    logger.info("Tasks fetched count=%s user_id=%s", len(tasks), current_user.user_id)
+    logger.info("Tasks fetched count=%s limit=%s offset=%s user_id=%s", len(tasks), limit, offset, current_user.user_id)
     return tasks
 
 
