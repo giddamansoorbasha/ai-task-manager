@@ -1,14 +1,21 @@
 import logging
-import app.core.logging
+from contextlib import asynccontextmanager
+
+import app.core.logging as _app_logging  # noqa: F401
 from fastapi import FastAPI
 from app.routes.auth import auth_router
 from app.routes.task import task_router
 
 logger = logging.getLogger(__name__)
 
-logger.info("Application Started")
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    logger.info("Application started")
+    yield
+    logger.info("Application stopped")
 
-app = FastAPI()
+
+app = FastAPI(title="AI Task Manager", lifespan=lifespan)
 
 app.include_router(auth_router)
 app.include_router(task_router)
@@ -19,4 +26,4 @@ async def home():
 
 @app.get("/health")
 async def health():
-    return {"message": "ok"}
+    return {"status": "ok"}
