@@ -13,5 +13,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_TO_FILE: bool = True
     REDIS_URL: str | None = None
+    GROQ_API_KEY: str | None = None
+    GROQ_MODEL: str = "openai/gpt-oss-20b"
 
 settings = Settings()
