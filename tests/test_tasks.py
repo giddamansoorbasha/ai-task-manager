@@ -72,3 +72,14 @@ async def test_delete_task(client, login_as):
     task = (await client.post("/tasks/", json={"title": "T", "description": "D"}, headers=headers)).json()
     assert (await client.delete(f"/tasks/{task['task_id']}", headers=headers)).status_code == 204
     assert (await client.get(f"/tasks/{task['task_id']}", headers=headers)).status_code == 404
+
+async def test_priority_default_and_not_reset_on_put(client, login_as):
+    headers = await login_as()
+    task = (await client.post("/tasks/", json={"title": "T", "description": "D", "priority": "high"}, headers=headers)).json()
+    assert task["priority"] == "high"
+
+    res = await client.put(f"/tasks/{task['task_id']}", json={"title": "New", "description": "D"}, headers=headers)
+    assert res.json()["priority"] == "high"
+
+    default = (await client.post("/tasks/", json={"title": "T2", "description": "D"}, headers=headers)).json()
+    assert default["priority"] == "medium"

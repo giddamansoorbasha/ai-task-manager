@@ -30,7 +30,7 @@ def build_prompt(tasks: list[Task]) -> str:
     lines = []
     for t in tasks:
         due = t.due_date.date().isoformat() if t.due_date else "no due date"
-        lines.append(f"- [{t.status.value}] {t.title} (due: {due}): {t.description[:200]}")
+        lines.append(f"- [{t.status.value}/{t.priority.value}] {t.title} (due: {due}): {t.description[:200]}")
     return "\n".join(lines)
 
 async def summarize_tasks(tasks: list[Task]) -> str:

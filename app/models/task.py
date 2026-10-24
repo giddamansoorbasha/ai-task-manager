@@ -8,6 +8,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.models.user import User
 
+class TaskPriority(str, enum.Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
 class TaskStatus(str, enum.Enum):
     todo = "todo"
     in_progress = "in_progress"
@@ -20,6 +25,7 @@ class Task(Base):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
     status: Mapped[TaskStatus] = mapped_column(Enum(TaskStatus), default=TaskStatus.todo, server_default=TaskStatus.todo.value, nullable=False)
+    priority: Mapped[TaskPriority] = mapped_column(Enum(TaskPriority), default=TaskPriority.medium, server_default=TaskPriority.medium.value, nullable=False)
     due_date: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.user_id"),nullable=False,index=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
