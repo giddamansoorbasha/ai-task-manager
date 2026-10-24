@@ -40,10 +40,10 @@ async def summarize_tasks(tasks: list[Task]) -> str:
         response = await get_client().chat.completions.create(
             model=settings.GROQ_MODEL,
             messages=[
-                {"role":"system", "content":SYSTEM_PROMPT},
-                {"role":"user", "content":build_prompt(tasks)}
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": build_prompt(tasks)}
             ],
-            max_completion_tokens=800
+            max_tokens=800
         )
     except APITimeoutError:
         logger.error("Groq request timed out")
@@ -51,4 +51,5 @@ async def summarize_tasks(tasks: list[Task]) -> str:
     except APIError:
         logger.exception("Groq request failed")
         raise AIServiceError("AI request failed")
-    return (response.content[0].message.content or "").strip()
+
+    return (response.choices[0].message.content or "").strip()
