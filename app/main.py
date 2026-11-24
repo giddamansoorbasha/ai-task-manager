@@ -1,31 +1,31 @@
-import logging
 from contextlib import asynccontextmanager
-
-import app.core.logging as _app_logging  # noqa: F401
 from fastapi import FastAPI
 from app.routes.auth import auth_router
 from app.routes.task import task_router
-from app.routes.ai import ai_router
+from app.core.database import Base, async_engine
+from app.models.user import User
+from app.models.task import Task
 
-
-logger = logging.getLogger(__name__)
+async def reset_db():
+    async with async_engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    logger.info("Application started")
+    print("🟢 Application started...")
+    await reset_db()
     yield
-    logger.info("Application stopped")
-
+    print("🔴 Application stopped...")
 
 app = FastAPI(title="AI Task Manager", lifespan=lifespan)
 
 app.include_router(auth_router)
 app.include_router(task_router)
-app.include_router(ai_router)
 
 @app.get("/")
 async def home():
-    return {"message": "Welcome to production style backend system"}
+    return {"message": "Welcome to production style backend-system"}
 
 @app.get("/health")
 async def health():

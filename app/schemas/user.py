@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field, field_validator
-
+from pydantic import BaseModel, EmailStr, Field, field_validator, ConfigDict
+from uuid import UUID
 
 class SignUp(BaseModel):
     name: str = Field(min_length=1, max_length=255)
@@ -11,8 +11,13 @@ class SignUp(BaseModel):
     def lowercase_email(cls, v: str) -> str:
         return v.lower()
 
-
 class SignUpResponse(BaseModel):
-    user_id: int
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: UUID
     name: str
     email: str
+
+class LogIn(BaseModel):
+    email: EmailStr
+    password: str

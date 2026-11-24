@@ -1,6 +1,6 @@
-from pydantic import BaseModel, AwareDatetime, Field
-from app.models.task import TaskStatus
+from pydantic import BaseModel, AwareDatetime, Field, ConfigDict
 from app.models.task import TaskPriority, TaskStatus
+from uuid import UUID
 
 class TaskStatusUpdate(BaseModel):
     status: TaskStatus
@@ -12,10 +12,12 @@ class TaskRequest(BaseModel):
     due_date: AwareDatetime | None = None
 
 class TaskResponse(BaseModel):
-    task_id: int
+    model_config = ConfigDict(from_attributes=True)
+
+    task_id: UUID
     title: str
     description: str
-    user_id: int
+    user_id: UUID
     status: TaskStatus
     priority: TaskPriority
     due_date: AwareDatetime | None = None
